@@ -1,0 +1,33 @@
+name: Update Website
+
+on:
+  schedule:
+    - cron: '*/5 * * * *' # Runs every 5 minutes
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+
+      - name: Install
+        run: pip install yfinance pandas
+
+      - name: Generate Site
+        run: python main.py
+
+      - name: Publish
+        run: |
+          git config --global user.name 'Bot'
+          git config --global user.email 'bot@noreply.github.com'
+          git add index.html
+          git commit -m "Update Site" || exit 0
+          git push
